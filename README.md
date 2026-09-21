@@ -12,14 +12,14 @@
 
 有些内容不值得单独建文件，或者暂时不知道该存在哪里。长期记在 Script 里，也都没问题。
 
-> 当前为 `0.9.0 Public Beta`。安装包尚未使用 Apple Developer ID 签名，也未经过 Apple 公证。请先阅读[首次打开说明](docs/INSTALL.md)。
+> 当前为 `0.9.1 Public Beta`。安装包尚未使用 Apple Developer ID 签名，也未经过 Apple 公证。请先阅读[首次打开说明](docs/INSTALL.md)。
 
 ## 下载
 
 前往 [GitHub Releases](https://github.com/hy198619/script-app/releases) 下载最新公开测试版：
 
 ```text
-Script-App-DraftBook-v0.9.0-macOS-unsigned.dmg
+Script-App-DraftBook-v0.9.1-macOS-unsigned.dmg
 ```
 
 系统要求：macOS 14 Sonoma 或更高版本，支持 Apple Silicon 与 Intel Mac。
@@ -34,7 +34,7 @@ Script-App-DraftBook-v0.9.0-macOS-unsigned.dmg
 - 不相关的内容可以留在同一页，由分隔线区分，并能分别编辑和管理；
 - 自动保存，重启后恢复未划定和已划定内容；
 - 每条草稿可独立切换 Markdown；
-- 彩色标签兼具分类与时间褪色提示；
+- 彩色标签用于分类，并在创建后的 7 天内连续褪色；悬停可查看创建、更新及清理时间；
 - 全文搜索，并可只看某个颜色标签；
 - 到期草稿进入清理台，可延期、固定、存档或删除；
 - 回收站支持恢复和永久删除；

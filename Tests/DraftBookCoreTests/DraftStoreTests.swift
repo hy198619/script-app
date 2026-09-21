@@ -319,6 +319,118 @@ final class DraftStoreTests: XCTestCase {
         )
     }
 
+    func testTagFadeUsesCreationTimeContinuously() {
+        let createdAt = Date(timeIntervalSince1970: 1_000)
+
+        XCTAssertEqual(
+            DraftTiming.tagOpacity(createdAt: createdAt, referenceDate: createdAt),
+            1,
+            accuracy: 0.0001
+        )
+        XCTAssertEqual(
+            DraftTiming.tagOpacity(
+                createdAt: createdAt,
+                referenceDate: createdAt.addingTimeInterval(3.5 * 86_400)
+            ),
+            0.72,
+            accuracy: 0.0001
+        )
+        XCTAssertEqual(
+            DraftTiming.tagOpacity(
+                createdAt: createdAt,
+                referenceDate: createdAt.addingTimeInterval(7 * 86_400)
+            ),
+            0.44,
+            accuracy: 0.0001
+        )
+        XCTAssertEqual(
+            DraftTiming.tagSaturation(
+                createdAt: createdAt,
+                referenceDate: createdAt.addingTimeInterval(14 * 86_400)
+            ),
+            0.55,
+            accuracy: 0.0001
+        )
+    }
+
+    func testEditingRestartsCleanupWithoutResettingCreationFade() {
+        let store = DraftStore(dataDirectory: directory)
+        let createdAt = Date(timeIntervalSince1970: 1_000)
+        let editedAt = createdAt.addingTimeInterval(10 * 86_400)
+        store.composer = "一条旧草稿"
+        let draft = store.sealComposer(now: createdAt)!
+
+        store.updateContent(id: draft.id, content: "编辑后的旧草稿", now: editedAt)
+
+        let edited = store.draft(withID: draft.id)!
+        XCTAssertEqual(edited.createdAt, createdAt)
+        XCTAssertEqual(edited.updatedAt, editedAt)
+        XCTAssertEqual(
+            edited.reviewAt,
+            editedAt.addingTimeInterval(7 * 86_400)
+        )
+        XCTAssertEqual(
+            DraftTiming.tagOpacity(createdAt: edited.createdAt, referenceDate: editedAt),
+            0.44,
+            accuracy: 0.0001
+        )
+    }
+
+    func testMarkdownToggleDoesNotChangeContentUpdateTime() {
+        let store = DraftStore(dataDirectory: directory)
+        let createdAt = Date(timeIntervalSince1970: 1_000)
+        store.composer = "Markdown 草稿"
+        let draft = store.sealComposer(now: createdAt)!
+
+        store.toggleMarkdown(id: draft.id)
+
+        XCTAssertTrue(store.draft(withID: draft.id)?.markdownEnabled == true)
+        XCTAssertEqual(store.draft(withID: draft.id)?.updatedAt, createdAt)
+        XCTAssertEqual(
+            store.draft(withID: draft.id)?.reviewAt,
+            createdAt.addingTimeInterval(7 * 86_400)
+        )
+    }
+
+    func testTimingDescriptionsExplainCleanupCycle() {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        let referenceDate = Date(timeIntervalSince1970: 10 * 86_400 + 12 * 3_600)
+        let updatedAt = referenceDate.addingTimeInterval(-6 * 86_400)
+
+        XCTAssertEqual(
+            DraftTiming.uneditedDescription(updatedAt: updatedAt, referenceDate: referenceDate),
+            "已有 6 天未编辑"
+        )
+        XCTAssertEqual(
+            DraftTiming.cleanupDescription(
+                reviewAt: referenceDate.addingTimeInterval(86_400),
+                isPinned: false,
+                referenceDate: referenceDate,
+                calendar: calendar
+            ),
+            "明天进入清理台"
+        )
+        XCTAssertEqual(
+            DraftTiming.cleanupDescription(
+                reviewAt: referenceDate.addingTimeInterval(-1),
+                isPinned: false,
+                referenceDate: referenceDate,
+                calendar: calendar
+            ),
+            "已进入清理台"
+        )
+        XCTAssertEqual(
+            DraftTiming.cleanupDescription(
+                reviewAt: nil,
+                isPinned: true,
+                referenceDate: referenceDate,
+                calendar: calendar
+            ),
+            "已固定，不进入清理台"
+        )
+    }
+
     func testPostponeAndPinRemoveDraftFromCleanup() {
         let store = DraftStore(dataDirectory: directory)
         let createdAt = Date(timeIntervalSince1970: 1_000)

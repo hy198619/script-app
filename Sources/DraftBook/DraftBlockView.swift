@@ -20,7 +20,9 @@ struct DraftBlockView: View {
     var body: some View {
         if let draft {
             VStack(alignment: .leading, spacing: 0) {
-                draftHeader(draft)
+                TimelineView(.periodic(from: .now, by: 300)) { context in
+                    draftHeader(draft, referenceDate: context.date)
+                }
 
                 if draft.markdownEnabled && !isEditingMarkdown {
                     markdownPreview(draft)
@@ -46,7 +48,7 @@ struct DraftBlockView: View {
         }
     }
 
-    private func draftHeader(_ draft: Draft) -> some View {
+    private func draftHeader(_ draft: Draft, referenceDate: Date) -> some View {
         HStack(spacing: 8) {
             Button {
                 showingColors.toggle()
@@ -54,13 +56,30 @@ struct DraftBlockView: View {
                 ZStack {
                     Color.clear
                     Capsule()
-                        .fill(draft.color.swiftUIColor.opacity(tagOpacity(for: draft)))
+                        .fill(
+                            tagBaseColor(for: draft)
+                                .opacity(DraftTiming.tagOpacity(
+                                    createdAt: draft.createdAt,
+                                    referenceDate: referenceDate
+                                ))
+                        )
+                        .saturation(DraftTiming.tagSaturation(
+                            createdAt: draft.createdAt,
+                            referenceDate: referenceDate
+                        ))
                         .frame(width: 26, height: 8)
                         .overlay {
+                            Capsule()
+                                .stroke(
+                                    isDue(draft, referenceDate: referenceDate) ? Color.orange : Color.clear,
+                                    lineWidth: 1.25
+                                )
+
                             if draft.pinned {
                                 Image(systemName: "pin.fill")
                                     .font(.system(size: 6, weight: .bold))
                                     .foregroundStyle(.white)
+                                    .shadow(color: .black.opacity(0.35), radius: 0.5)
                             }
                         }
                 }
@@ -68,7 +87,7 @@ struct DraftBlockView: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .help("更换草稿签颜色")
+            .help(tagHelpText(for: draft, referenceDate: referenceDate))
             .popover(isPresented: $showingColors, arrowEdge: .bottom) {
                 colorPicker(draft)
             }
@@ -81,9 +100,13 @@ struct DraftBlockView: View {
                 actionButtons(draft)
                     .transition(.opacity.combined(with: .move(edge: .trailing)))
             } else {
-                Text(statusText(for: draft))
+                Text(statusText(for: draft, referenceDate: referenceDate))
                     .font(.system(size: 10, design: .rounded))
-                    .foregroundStyle(isDue(draft) ? Color.orange : Color.secondary.opacity(0.45))
+                    .foregroundStyle(
+                        isDue(draft, referenceDate: referenceDate)
+                            ? Color.orange
+                            : Color.secondary.opacity(0.45)
+                    )
                     .fixedSize()
             }
         }
@@ -210,41 +233,54 @@ struct DraftBlockView: View {
         )
     }
 
-    private func tagOpacity(for draft: Draft) -> Double {
-        guard !draft.pinned else { return 1 }
-        guard let reviewAt = draft.reviewAt,
-              let days = draft.reviewIntervalDays,
-              days > 0 else { return 1 }
-
-        let total = TimeInterval(days * 86_400)
-        let remaining = reviewAt.timeIntervalSinceNow
-        let progress = max(0, min(1, 1 - remaining / total))
-
-        return switch progress {
-        case ..<0.2: 1
-        case ..<0.5: 0.82
-        case ..<1: 0.64
-        default: 0.44
-        }
+    private func tagBaseColor(for draft: Draft) -> Color {
+        draft.color == .gray ? Color(nsColor: .labelColor) : draft.color.swiftUIColor
     }
 
-    private func isDue(_ draft: Draft) -> Bool {
+    private func isDue(_ draft: Draft, referenceDate: Date) -> Bool {
         guard !draft.pinned, let reviewAt = draft.reviewAt else { return false }
-        return reviewAt <= Date()
+        return reviewAt <= referenceDate
     }
 
-    private func statusText(for draft: Draft) -> String {
-        if isDue(draft) {
+    private func statusText(for draft: Draft, referenceDate: Date) -> String {
+        if isDue(draft, referenceDate: referenceDate) {
             return "待处理"
         }
-        return relativeDate(draft.createdAt)
+        return relativeDate(draft.createdAt, referenceDate: referenceDate)
     }
 
-    private func relativeDate(_ date: Date) -> String {
+    private func relativeDate(_ date: Date, referenceDate: Date) -> String {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .short
         formatter.locale = Locale(identifier: "zh-Hans")
-        return formatter.localizedString(for: date, relativeTo: Date())
+        return formatter.localizedString(for: date, relativeTo: referenceDate)
+    }
+
+    private func tagHelpText(for draft: Draft, referenceDate: Date) -> String {
+        let created = formattedDate(draft.createdAt, referenceDate: referenceDate)
+        let updated = formattedDate(draft.updatedAt, referenceDate: referenceDate)
+        let elapsedText = DraftTiming.uneditedDescription(
+            updatedAt: draft.updatedAt,
+            referenceDate: referenceDate
+        )
+        let cleanupText = DraftTiming.cleanupDescription(
+            reviewAt: draft.reviewAt,
+            isPinned: draft.pinned,
+            referenceDate: referenceDate
+        )
+
+        return "创建于 \(created) · 更新于 \(updated)\n\(elapsedText) · \(cleanupText)\n点击更换标签颜色"
+    }
+
+    private func formattedDate(_ date: Date, referenceDate: Date) -> String {
+        let calendar = Calendar.current
+        let format = calendar.component(.year, from: date) == calendar.component(.year, from: referenceDate)
+            ? "M 月 d 日"
+            : "yyyy 年 M 月 d 日"
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "zh-Hans")
+        formatter.dateFormat = format
+        return formatter.string(from: date)
     }
 }
 

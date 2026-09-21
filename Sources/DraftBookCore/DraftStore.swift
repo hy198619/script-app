@@ -190,10 +190,9 @@ public final class DraftStore: ObservableObject {
         }
     }
 
-    public func toggleMarkdown(id: UUID, now: Date = Date()) {
+    public func toggleMarkdown(id: UUID) {
         mutate(id: id) { draft in
             draft.markdownEnabled.toggle()
-            draft.updatedAt = now
         }
     }
 
@@ -341,7 +340,7 @@ public final class DraftStore: ObservableObject {
                 isSample: true
             ),
             Draft(
-                content: "【示例：固定保留】\n这条紫色草稿不会进入清理台，也不会随时间变淡。",
+                content: "【示例：固定保留】\n这条紫色草稿不会进入清理台；标签仍会按照创建时间褪色。",
                 createdAt: now.addingTimeInterval(-30 * day),
                 updatedAt: now.addingTimeInterval(-30 * day),
                 color: .purple,
