@@ -12,7 +12,7 @@
 
 ## 下载
 
-前往 [GitHub Releases](https://github.com/hy198619/script-app/releases/latest) 下载：
+前往 [GitHub Releases](https://github.com/hy198619/script-app/releases) 下载最新公开测试版：
 
 ```text
 Script-App-DraftBook-v0.9.0-macOS-unsigned.dmg
