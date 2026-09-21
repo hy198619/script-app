@@ -1,0 +1,10 @@
+.DS_Store
+.build/
+.swiftpm/
+DerivedData/
+dist/
+*.xcuserstate
+xcuserdata/
+Resources/AppIcon-1024.png
+Resources/AppIcon-Drafts-v2-1024.png
+Resources/AppIcon.iconset/

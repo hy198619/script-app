@@ -1,0 +1,51 @@
+name: Bug 报告
+description: 报告可以稳定复现的问题
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: 请不要粘贴真实草稿、账号、API Key、密码或其他私人信息。
+  - type: input
+    id: version
+    attributes:
+      label: 草稿本版本
+      placeholder: 例如 0.9.0
+    validations:
+      required: true
+  - type: input
+    id: macos
+    attributes:
+      label: macOS 与 Mac 型号
+      placeholder: 例如 macOS 15.2，MacBook Air M2
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 你原本想完成什么？
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际发生了什么？
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      placeholder: |
+        1. …
+        2. …
+        3. …
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: 隐私确认
+      options:
+        - label: 我已经删除或遮挡反馈中的私人内容
+          required: true

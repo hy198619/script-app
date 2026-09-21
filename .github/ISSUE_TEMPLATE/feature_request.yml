@@ -1,0 +1,24 @@
+name: 功能建议
+description: 描述一个真实使用场景和希望改进的地方
+title: "[建议] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: scenario
+    attributes:
+      label: 使用场景
+      description: 你在什么情况下遇到了问题？
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: 目前怎样处理？
+    validations:
+      required: true
+  - type: textarea
+    id: change
+    attributes:
+      label: 你希望草稿本怎样改进？
+    validations:
+      required: true

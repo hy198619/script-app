@@ -1,0 +1,262 @@
+import AppKit
+import DraftBookCore
+import SwiftUI
+
+struct DraftBlockView: View {
+    @EnvironmentObject private var store: DraftStore
+
+    let draftID: UUID
+
+    @State private var isHovered = false
+    @State private var isEditingMarkdown = false
+    @State private var editorFocused = false
+    @State private var showingColors = false
+    @State private var showingArchiveSheet = false
+
+    private var draft: Draft? {
+        store.draft(withID: draftID)
+    }
+
+    var body: some View {
+        if let draft {
+            VStack(alignment: .leading, spacing: 0) {
+                draftHeader(draft)
+
+                if draft.markdownEnabled && !isEditingMarkdown {
+                    markdownPreview(draft)
+                } else {
+                    GrowingTextEditor(
+                        text: contentBinding,
+                        isFocused: $editorFocused,
+                        font: .systemFont(ofSize: 14),
+                        minHeight: 48,
+                        lineSpacing: 3,
+                        onCommit: nil
+                    )
+                    .frame(minHeight: 48)
+                    .padding(.vertical, 5)
+                }
+            }
+            .padding(.bottom, 10)
+            .sheet(isPresented: $showingArchiveSheet) {
+                ArchiveDraftSheet(draft: draft) { title in
+                    store.archive(id: draft.id, title: title)
+                }
+            }
+        }
+    }
+
+    private func draftHeader(_ draft: Draft) -> some View {
+        HStack(spacing: 8) {
+            Button {
+                showingColors.toggle()
+            } label: {
+                ZStack {
+                    Color.clear
+                    Capsule()
+                        .fill(draft.color.swiftUIColor.opacity(tagOpacity(for: draft)))
+                        .frame(width: 26, height: 8)
+                        .overlay {
+                            if draft.pinned {
+                                Image(systemName: "pin.fill")
+                                    .font(.system(size: 6, weight: .bold))
+                                    .foregroundStyle(.white)
+                            }
+                        }
+                }
+                .frame(width: 36, height: 24)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .help("更换草稿签颜色")
+            .popover(isPresented: $showingColors, arrowEdge: .bottom) {
+                colorPicker(draft)
+            }
+
+            Rectangle()
+                .fill(Color.secondary.opacity(0.18))
+                .frame(height: 1)
+
+            if isHovered {
+                actionButtons(draft)
+                    .transition(.opacity.combined(with: .move(edge: .trailing)))
+            } else {
+                Text(statusText(for: draft))
+                    .font(.system(size: 10, design: .rounded))
+                    .foregroundStyle(isDue(draft) ? Color.orange : Color.secondary.opacity(0.45))
+                    .fixedSize()
+            }
+        }
+        .frame(height: 28)
+        .contentShape(Rectangle())
+        .onHover { hovering in
+            withAnimation(.easeOut(duration: 0.16)) {
+                isHovered = hovering
+            }
+        }
+    }
+
+    private func actionButtons(_ draft: Draft) -> some View {
+        HStack(spacing: 8) {
+            iconButton("doc.on.doc", help: "复制整条") {
+                NSPasteboard.general.clearContents()
+                NSPasteboard.general.setString(draft.content, forType: .string)
+                store.markCopied(id: draft.id)
+            }
+
+            iconButton(draft.pinned ? "pin.slash" : "pin", help: draft.pinned ? "取消固定" : "固定") {
+                store.togglePinned(id: draft.id)
+            }
+
+            textButton("MD", active: draft.markdownEnabled, help: draft.markdownEnabled ? "关闭 Markdown" : "开启 Markdown") {
+                store.toggleMarkdown(id: draft.id)
+                isEditingMarkdown = false
+            }
+
+            iconButton("archivebox", help: "存档") {
+                showingArchiveSheet = true
+            }
+
+            iconButton("trash", help: "删除") {
+                store.moveToTrash(id: draft.id)
+            }
+        }
+        .padding(.leading, 2)
+    }
+
+    private func iconButton(
+        _ systemName: String,
+        help: String,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            Image(systemName: systemName)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(.secondary)
+        }
+        .buttonStyle(.plain)
+        .help(help)
+    }
+
+    private func textButton(
+        _ title: String,
+        active: Bool,
+        help: String,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(.system(size: 9, weight: .bold, design: .rounded))
+                .foregroundStyle(active ? Color.accentColor : .secondary)
+                .frame(minWidth: 17)
+        }
+        .buttonStyle(.plain)
+        .help(help)
+    }
+
+    private func colorPicker(_ draft: Draft) -> some View {
+        HStack(spacing: 10) {
+            ForEach(DraftColor.allCases, id: \.self) { color in
+                Button {
+                    store.setColor(id: draft.id, color: color)
+                    showingColors = false
+                } label: {
+                    Circle()
+                        .fill(color.swiftUIColor)
+                        .frame(width: 18, height: 18)
+                        .overlay {
+                            if draft.color == color {
+                                Image(systemName: "checkmark")
+                                    .font(.system(size: 8, weight: .bold))
+                                    .foregroundStyle(.white)
+                            }
+                        }
+                }
+                .buttonStyle(.plain)
+                .help(color.displayName)
+            }
+        }
+        .padding(12)
+    }
+
+    private func markdownPreview(_ draft: Draft) -> some View {
+        Group {
+            if let attributed = try? AttributedString(
+                markdown: draft.content,
+                options: .init(interpretedSyntax: .full)
+            ) {
+                Text(attributed)
+            } else {
+                Text(draft.content)
+            }
+        }
+        .font(.system(size: 14))
+        .lineSpacing(3)
+        .textSelection(.enabled)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, 12)
+        .contentShape(Rectangle())
+        .onTapGesture(count: 2) {
+            isEditingMarkdown = true
+            editorFocused = true
+        }
+        .help("双击编辑 Markdown 源码")
+    }
+
+    private var contentBinding: Binding<String> {
+        Binding(
+            get: { store.draft(withID: draftID)?.content ?? "" },
+            set: { store.updateContent(id: draftID, content: $0) }
+        )
+    }
+
+    private func tagOpacity(for draft: Draft) -> Double {
+        guard !draft.pinned else { return 1 }
+        guard let reviewAt = draft.reviewAt,
+              let days = draft.reviewIntervalDays,
+              days > 0 else { return 1 }
+
+        let total = TimeInterval(days * 86_400)
+        let remaining = reviewAt.timeIntervalSinceNow
+        let progress = max(0, min(1, 1 - remaining / total))
+
+        return switch progress {
+        case ..<0.2: 1
+        case ..<0.5: 0.82
+        case ..<1: 0.64
+        default: 0.44
+        }
+    }
+
+    private func isDue(_ draft: Draft) -> Bool {
+        guard !draft.pinned, let reviewAt = draft.reviewAt else { return false }
+        return reviewAt <= Date()
+    }
+
+    private func statusText(for draft: Draft) -> String {
+        if isDue(draft) {
+            return "待处理"
+        }
+        return relativeDate(draft.createdAt)
+    }
+
+    private func relativeDate(_ date: Date) -> String {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .short
+        formatter.locale = Locale(identifier: "zh-Hans")
+        return formatter.localizedString(for: date, relativeTo: Date())
+    }
+}
+
+extension DraftColor {
+    var swiftUIColor: Color {
+        switch self {
+        case .gray: Color(nsColor: .systemGray)
+        case .yellow: Color(nsColor: .systemYellow)
+        case .blue: Color(nsColor: .systemBlue)
+        case .purple: Color(nsColor: .systemPurple)
+        case .green: Color(nsColor: .systemGreen)
+        case .red: Color(nsColor: .systemRed)
+        }
+    }
+}
