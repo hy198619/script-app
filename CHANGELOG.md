@@ -3,7 +3,7 @@
 ## 0.9.2 Public Beta
 
 - 英文产品名由 Script App 更改为 DraftBook，中文名仍为“草稿本”；
-- 安装包和说明文档中的产品名称同步更新。
+- 安装包、说明文档和 GitHub 仓库名称同步更新。
 
 ## 0.9.1 Public Beta
 
