@@ -16,7 +16,7 @@
 
 ## 下载
 
-前往 [GitHub Releases](https://github.com/hy198619/draftbook/releases) 下载最新公开测试版：
+前往 [GitHub Releases](https://github.com/hy198619/script-app/releases) 下载最新公开测试版：
 
 ```text
 DraftBook-v0.9.2-macOS-unsigned.dmg
@@ -67,7 +67,7 @@ DraftBook-v0.9.2-macOS-unsigned.dmg
 
 ## 反馈
 
-请通过 [GitHub Issues](https://github.com/hy198619/draftbook/issues) 报告问题或提出建议。建议先阅读[反馈指南](docs/FEEDBACK.md)，不要在 Issue 或截图中泄露真实草稿和账号信息。
+请通过 [GitHub Issues](https://github.com/hy198619/script-app/issues) 报告问题或提出建议。建议先阅读[反馈指南](docs/FEEDBACK.md)，不要在 Issue 或截图中泄露真实草稿和账号信息。
 
 ## 从源码构建
 
