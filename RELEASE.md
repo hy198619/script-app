@@ -20,7 +20,7 @@
 输出：
 
 ```text
-dist/Script-App-DraftBook-v0.9.1-macOS-unsigned.dmg
+dist/DraftBook-v0.9.2-macOS-unsigned.dmg
 dist/SHA256SUMS.txt
 ```
 

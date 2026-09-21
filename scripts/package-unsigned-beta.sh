@@ -7,7 +7,7 @@ dist_dir="$project_dir/dist"
 bundle_dir="$dist_dir/草稿本.app"
 info_plist="$project_dir/Resources/Info.plist"
 version=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$info_plist")
-dmg_name="Script-App-DraftBook-v${version}-macOS-unsigned.dmg"
+dmg_name="DraftBook-v${version}-macOS-unsigned.dmg"
 dmg_path="$dist_dir/$dmg_name"
 checksums_path="$dist_dir/SHA256SUMS.txt"
 

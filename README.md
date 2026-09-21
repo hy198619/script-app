@@ -2,24 +2,24 @@
   <img src="Resources/AppIcon-final-1024.png" width="128" alt="草稿本图标">
 </p>
 
-<h1 align="center">Script App · 草稿本</h1>
+<h1 align="center">DraftBook · 草稿本</h1>
 
 <p align="center">给一人公司主理人和内容创作者的草稿本，一个文字的临时中转站。</p>
 
-你可以用 Script App（草稿本）记录那些临时的、或者还没到“正式归档”这一步的文字：一条需要即时记下的信息、突然冒出的灵感、边看视频边记下的笔记、需要反复打磨的微信消息、朋友圈文案或邮件、临时待办，以及稍后会用到的网址或账号名……
+你可以用 DraftBook（草稿本）记录那些临时的、或者还没到“正式归档”这一步的文字：一条需要即时记下的信息、突然冒出的灵感、边看视频边记下的笔记、需要反复打磨的微信消息、朋友圈文案或邮件、临时待办，以及稍后会用到的网址或账号名……
 
-有些内容过两天就没用了；有些要在正式发出前改上几遍；还有一些只是先写下来，稍后再放进笔记软件或知识库。Script 就是这样一个随手可写的地方，方便你迅速记下这些“短保”内容。它更像文字的临时中转站，不是另一个等着你整理和维护的知识库。
+有些内容过两天就没用了；有些要在正式发出前改上几遍；还有一些只是先写下来，稍后再放进笔记软件或知识库。DraftBook 就是这样一个随手可写的地方，方便你迅速记下这些“短保”内容。它更像文字的临时中转站，不是另一个等着你整理和维护的知识库。
 
-有些内容不值得单独建文件，或者暂时不知道该存在哪里。长期记在 Script 里，也都没问题。
+有些内容不值得单独建文件，或者暂时不知道该存在哪里。长期记在 DraftBook 里，也都没问题。
 
-> 当前为 `0.9.1 Public Beta`。安装包尚未使用 Apple Developer ID 签名，也未经过 Apple 公证。请先阅读[首次打开说明](docs/INSTALL.md)。
+> 当前为 `0.9.2 Public Beta`。安装包尚未使用 Apple Developer ID 签名，也未经过 Apple 公证。请先阅读[首次打开说明](docs/INSTALL.md)。
 
 ## 下载
 
-前往 [GitHub Releases](https://github.com/hy198619/script-app/releases) 下载最新公开测试版：
+前往 [GitHub Releases](https://github.com/hy198619/draftbook/releases) 下载最新公开测试版：
 
 ```text
-Script-App-DraftBook-v0.9.1-macOS-unsigned.dmg
+DraftBook-v0.9.2-macOS-unsigned.dmg
 ```
 
 系统要求：macOS 14 Sonoma 或更高版本，支持 Apple Silicon 与 Intel Mac。
@@ -67,7 +67,7 @@ Script-App-DraftBook-v0.9.1-macOS-unsigned.dmg
 
 ## 反馈
 
-请通过 [GitHub Issues](https://github.com/hy198619/script-app/issues) 报告问题或提出建议。建议先阅读[反馈指南](docs/FEEDBACK.md)，不要在 Issue 或截图中泄露真实草稿和账号信息。
+请通过 [GitHub Issues](https://github.com/hy198619/draftbook/issues) 报告问题或提出建议。建议先阅读[反馈指南](docs/FEEDBACK.md)，不要在 Issue 或截图中泄露真实草稿和账号信息。
 
 ## 从源码构建
 

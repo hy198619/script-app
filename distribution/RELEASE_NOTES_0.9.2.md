@@ -1,21 +1,19 @@
-# 草稿本 0.9.1 Public Beta
+# DraftBook（草稿本）0.9.2 Public Beta
 
 DraftBook 是给一人公司主理人和内容创作者的草稿本，一个文字的临时中转站。
 
 ## 直接下载
 
-[下载草稿本 0.9.1（历史版本）](https://github.com/hy198619/draftbook/releases/download/v0.9.1/Script-App-DraftBook-v0.9.1-macOS-unsigned.dmg)
+[下载 DraftBook 0.9.2（macOS 通用版）](https://github.com/hy198619/draftbook/releases/download/v0.9.2/DraftBook-v0.9.2-macOS-unsigned.dmg)
 
 系统要求：macOS 14 Sonoma 或更高版本，支持 Apple Silicon 与 Intel Mac。
 
 ## 这次更新了什么
 
-- 标签颜色现在会在草稿创建后的 7 天内连续褪色，之后保持最低可见度，不再随编辑操作重新变深；
-- 默认灰色标签扩大了新旧草稿之间的明暗差；
-- 将鼠标停在标签上，可以看到创建时间、最后更新时间、未编辑天数，以及何时进入清理台；
-- 再次编辑正文会重新计算清理周期，但不会改变由创建时间决定的标签深浅；
-- 到期标签增加橙色描边，更容易辨认；
-- 切换 Markdown 显示模式不再改变正文更新时间。
+- 英文产品名由 Script App 更改为 DraftBook；
+- 中文产品名仍为“草稿本”；
+- 安装包、说明文档和 GitHub 仓库名称同步更新；
+- 其余功能与 0.9.1 保持一致。
 
 ## 主要功能
 
