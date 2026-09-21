@@ -9,9 +9,9 @@ struct FeatureGuideView: View {
         VStack(spacing: 0) {
             HStack {
                 VStack(alignment: .leading, spacing: 3) {
-                    Text("草稿本功能示例")
+                    Text("欢迎使用草稿本")
                         .font(.system(size: 18, weight: .semibold))
-                    Text("示例草稿会明确标注“示例”，可以随时一键移除。")
+                    Text("给一人公司主理人和内容创作者的文字临时中转站")
                         .font(.system(size: 12))
                         .foregroundStyle(.secondary)
                 }
@@ -29,10 +29,22 @@ struct FeatureGuideView: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("先写在这里，稍后再决定它去哪里")
+                            .font(.system(size: 14, weight: .semibold))
+                        Text("灵感、视频笔记、微信或邮件草稿、临时待办，以及稍后会用到的网址或账号名，都可以先放进草稿本。有些内容过两天就没用了，有些会在打磨后正式发出，还有一些会转入笔记软件或知识库。")
+                            .font(.system(size: 12))
+                        Text("示例草稿会明确标注“示例”，可以随时一键移除。数据目前没有加密，请勿保存密码、长期有效的 API Key、私钥或恢复码。")
+                            .font(.system(size: 11))
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(14)
+                    .background(Color.primary.opacity(0.045), in: RoundedRectangle(cornerRadius: 10))
+
                     guideSection(
                         title: "1. 输入与划定",
-                        example: "在最上方输入一段文字，按 ⌘↩︎。",
-                        result: "这段文字成为独立草稿；新的空白输入区仍留在最上方。"
+                        example: "在最上方输入一段文字，按 ⌘↩︎。下一条内容可以与它毫不相干。",
+                        result: "这段文字成为一条可以单独管理的草稿；新的空白输入区仍留在最上方，不需要新建文件或标签页。"
                     )
 
                     guideSection(
